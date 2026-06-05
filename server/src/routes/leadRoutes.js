@@ -7,18 +7,18 @@ const {
   updateLead,
   deleteLead,
 } = require('../controllers/leadController');
-const { validateLead } = require('../middleware/validateRequest');
+const { validateCreateLead, validateUpdateLead } = require('../middleware/validateRequest');
 
 // Leads routes mapping
 router.route('/')
   .get(getLeads)
-  .post(validateLead, createLead);
+  .post(validateCreateLead, createLead);
 
 router.route('/stats')
   .get(getLeadStats);
 
 router.route('/:id')
-  .put(validateLead, updateLead)
+  .put(validateUpdateLead, updateLead)
   .delete(deleteLead);
 
 module.exports = router;
