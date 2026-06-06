@@ -1,7 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
 import { useLeads } from '../context/LeadContext';
-import Navbar from '../components/layout/Navbar';
-import Sidebar from '../components/layout/Sidebar';
 import StatsCards from '../components/dashboard/StatsCards';
 import LeadFilters from '../components/leads/LeadFilters';
 import LeadTable from '../components/leads/LeadTable';
@@ -84,41 +82,33 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#13131f] text-slate-900 dark:text-slate-100 transition-colors duration-200">
-      <Navbar />
+    <>
+      {/* Header text */}
+      <div className="flex flex-col gap-1">
+        <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+          Leads Pipeline
+        </h2>
+        <p className="text-xs text-slate-500 dark:text-slate-500">
+          Manage and track customer interactions, deal progress, and conversion milestones.
+        </p>
+      </div>
 
-      <div className="flex">
-        <Sidebar />
+      {/* Statistics widgets */}
+      <StatsCards />
 
-        <main className="flex-1 px-4 py-6 md:p-8 space-y-6 max-w-[1600px] mx-auto w-full overflow-hidden">
-          {/* Header text */}
-          <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Leads Pipeline
-            </h2>
-            <p className="text-xs text-slate-450 dark:text-slate-500">
-              Manage and track customer interactions, deal progress, and conversion milestones.
-            </p>
+      {/* Search, Filter, Sort and View toggles */}
+      <LeadFilters />
+
+      {/* Main Pipeline Display Area */}
+      <div className="mt-6">
+        {view === 'table' ? (
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800/80">
+            <LeadTable onStatusChange={handleQuickStatusChange} />
+            <Pagination />
           </div>
-
-          {/* Statistics widgets */}
-          <StatsCards />
-
-          {/* Search, Filter, Sort and View toggles */}
-          <LeadFilters />
-
-          {/* Main Pipeline Display Area */}
-          <div className="mt-6">
-            {view === 'table' ? (
-              <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800/80">
-                <LeadTable onStatusChange={handleQuickStatusChange} />
-                <Pagination />
-              </div>
-            ) : (
-              <LeadKanban onStatusChange={handleQuickStatusChange} />
-            )}
-          </div>
-        </main>
+        ) : (
+          <LeadKanban onStatusChange={handleQuickStatusChange} />
+        )}
       </div>
 
       {/* Slide-out Add/Edit Lead Drawer */}
@@ -126,6 +116,7 @@ export default function Dashboard() {
 
       {/* Centered Delete Confirmation Dialog */}
       <DeleteModal onRefresh={loadData} />
-    </div>
+    </>
   );
 }
+

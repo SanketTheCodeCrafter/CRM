@@ -1,16 +1,27 @@
 import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './context/ThemeContext';
 import { LeadProvider } from './context/LeadContext';
+import AppLayout from './components/layout/AppLayout';
 import Dashboard from './pages/Dashboard';
+import Analytics from './pages/Analytics';
+import Settings from './pages/Settings';
 
 function App() {
   return (
     <ThemeProvider>
       <LeadProvider>
-        {/* Render Dashboard Page */}
-        <Dashboard />
-        
+        <BrowserRouter>
+          <Routes>
+            <Route element={<AppLayout />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+
         {/* React Hot Toast configurations */}
         <Toaster
           position="top-right"
