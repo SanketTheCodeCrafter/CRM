@@ -18,20 +18,34 @@ connectDB();
 app.use(helmet());
 
 // Configure CORS
-const allowedOrigins = [
-  process.env.CORS_ORIGIN || 'http://localhost:5173',
-  'http://localhost:5173', // Fallback for local Vite development
-];
+const allowedOrigins = [];
+if (process.env.CORS_ORIGIN) {
+  // Normalize by removing trailing slash if present
+  allowedOrigins.push(process.env.CORS_ORIGIN.replace(/\/$/, ''));
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, or Postman)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      
+      // Normalize origin
+      const cleanOrigin = origin.replace(/\/$/, '');
+
+      // Allow if it matches CORS_ORIGIN, local host, or is a vercel.app preview URL
+      const isAllowed = 
+        allowedOrigins.includes(cleanOrigin) ||
+        cleanOrigin.startsWith('http://localhost:') ||
+        cleanOrigin.startsWith('http://127.0.0.1:') ||
+        cleanOrigin.endsWith('.vercel.app');
+
+      if (isAllowed) {
+        return callback(null, true);
+      } else {
+        const msg = `The CORS policy for this site does not allow access from origin: ${origin}`;
         return callback(new Error(msg), false);
       }
-      return callback(null, true);
     },
     credentials: true,
   })
