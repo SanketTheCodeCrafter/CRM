@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './context/ThemeContext';
+import { SettingsProvider } from './context/SettingsContext';
 import { LeadProvider } from './context/LeadContext';
 import AppLayout from './components/layout/AppLayout';
 import Dashboard from './pages/Dashboard';
@@ -11,6 +12,7 @@ import Settings from './pages/Settings';
 function App() {
   return (
     <ThemeProvider>
+      <SettingsProvider>
       <LeadProvider>
         <BrowserRouter>
           <Routes>
@@ -49,6 +51,7 @@ function App() {
           }}
         />
       </LeadProvider>
+      </SettingsProvider>
     </ThemeProvider>
   );
 }

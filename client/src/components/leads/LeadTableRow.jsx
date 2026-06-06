@@ -1,11 +1,20 @@
 import React from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useLeads } from '../../context/LeadContext';
+import { useSettings } from '../../context/SettingsContext';
 import { STATUS_STYLES, STATUS_OPTIONS } from '../../utils/constants';
 import { formatDate } from '../../utils/formatters';
 
+// Map density setting to tailwind padding classes
+const DENSITY_CLASSES = {
+  compact: 'px-6 py-2',
+  comfortable: 'px-6 py-4',
+  spacious: 'px-6 py-6',
+};
+
 export default function LeadTableRow({ lead, onStatusChange }) {
   const { dispatch } = useLeads();
+  const { settings } = useSettings();
   const { name, email, phone, company, status, createdAt } = lead;
 
   const handleEditClick = () => {
@@ -17,11 +26,12 @@ export default function LeadTableRow({ lead, onStatusChange }) {
   };
 
   const statusStyle = STATUS_STYLES[status] || STATUS_STYLES.New;
+  const cellPadding = DENSITY_CLASSES[settings.displayDensity] || DENSITY_CLASSES.comfortable;
 
   return (
     <tr className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-b border-slate-100 dark:border-slate-800/60 transition duration-150">
       {/* Name & Email */}
-      <td className="whitespace-nowrap px-6 py-4">
+      <td className={`whitespace-nowrap ${cellPadding}`}>
         <div className="flex flex-col">
           <span className="font-semibold text-slate-900 dark:text-white text-sm">
             {name}
@@ -33,17 +43,17 @@ export default function LeadTableRow({ lead, onStatusChange }) {
       </td>
 
       {/* Company */}
-      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-700 dark:text-slate-300 font-medium">
+      <td className={`whitespace-nowrap ${cellPadding} text-sm text-slate-700 dark:text-slate-300 font-medium`}>
         {company}
       </td>
 
       {/* Phone */}
-      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400 font-mono">
+      <td className={`whitespace-nowrap ${cellPadding} text-sm text-slate-500 dark:text-slate-400 font-mono`}>
         {phone}
       </td>
 
       {/* Status (with inline quick change) */}
-      <td className="whitespace-nowrap px-6 py-4">
+      <td className={`whitespace-nowrap ${cellPadding}`}>
         <div className="flex items-center">
           <label htmlFor={`status-select-${lead._id}`} className="sr-only">Status</label>
           <select
@@ -62,12 +72,12 @@ export default function LeadTableRow({ lead, onStatusChange }) {
       </td>
 
       {/* Created Date */}
-      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
+      <td className={`whitespace-nowrap ${cellPadding} text-sm text-slate-500 dark:text-slate-400`}>
         {formatDate(createdAt)}
       </td>
 
       {/* Actions */}
-      <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
+      <td className={`whitespace-nowrap ${cellPadding} text-right text-sm`}>
         <div className="flex items-center justify-end gap-2">
           {/* Edit Button */}
           <button

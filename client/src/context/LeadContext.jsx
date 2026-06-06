@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { useSettings } from './SettingsContext';
 
 const LeadContext = createContext();
 
-const initialState = {
+const createInitialState = (leadsPerPage = 10, defaultView = 'table') => ({
   leads: [],
   stats: {
     total: 0,
@@ -14,7 +15,7 @@ const initialState = {
   },
   pagination: {
     page: 1,
-    limit: 10,
+    limit: leadsPerPage,
     total: 0,
     totalPages: 1,
   },
@@ -24,13 +25,13 @@ const initialState = {
     sortBy: 'createdAt',
     sortOrder: 'desc',
   },
-  view: 'table', // 'table' | 'kanban'
+  view: defaultView, // 'table' | 'kanban'
   loading: false,
   drawerOpen: false,
   selectedLead: null, // Lead being edited, or null for creating a new lead
   deleteModalOpen: false,
   leadToDelete: null,
-};
+});
 
 const leadReducer = (state, action) => {
   switch (action.type) {
@@ -60,6 +61,11 @@ const leadReducer = (state, action) => {
       return {
         ...state,
         pagination: { ...state.pagination, page: action.payload },
+      };
+    case 'SET_LIMIT':
+      return {
+        ...state,
+        pagination: { ...state.pagination, limit: action.payload, page: 1 },
       };
     case 'SET_VIEW':
       return {
@@ -96,7 +102,25 @@ const leadReducer = (state, action) => {
 };
 
 export const LeadProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(leadReducer, initialState);
+  const { settings } = useSettings();
+  const [state, dispatch] = useReducer(
+    leadReducer,
+    createInitialState(settings.leadsPerPage, settings.defaultView)
+  );
+
+  // Sync leadsPerPage from settings whenever it changes
+  useEffect(() => {
+    if (state.pagination.limit !== settings.leadsPerPage) {
+      dispatch({ type: 'SET_LIMIT', payload: settings.leadsPerPage });
+    }
+  }, [settings.leadsPerPage]);
+
+  // Sync defaultView from settings whenever it changes
+  useEffect(() => {
+    if (state.view !== settings.defaultView) {
+      dispatch({ type: 'SET_VIEW', payload: settings.defaultView });
+    }
+  }, [settings.defaultView]);
 
   return (
     <LeadContext.Provider value={{ state, dispatch }}>

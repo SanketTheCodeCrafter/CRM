@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
+import { useSettings } from '../context/SettingsContext';
 import {
-  Sun, Moon, Globe, Bell, Shield, Database, Palette,
-  Monitor, ChevronRight, ExternalLink, Save, Check,
+  Sun, Moon, Bell, Database, Palette,
+  Save, Check,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 export default function Settings() {
   const { theme, toggleTheme } = useTheme();
+  const { settings, updateSetting } = useSettings();
   const [notifications, setNotifications] = useState({
     emailAlerts: true,
     statusChanges: true,
     newLeads: false,
     weeklyReport: true,
   });
-  const [displayDensity, setDisplayDensity] = useState('comfortable');
-  const [leadsPerPage, setLeadsPerPage] = useState('10');
   const [saved, setSaved] = useState(false);
 
   const handleNotificationToggle = (key) => {
@@ -85,9 +85,9 @@ export default function Settings() {
               {['compact', 'comfortable', 'spacious'].map((density) => (
                 <button
                   key={density}
-                  onClick={() => setDisplayDensity(density)}
+                  onClick={() => updateSetting('displayDensity', density)}
                   className={`px-3 py-1.5 rounded-md text-xs font-semibold capitalize transition duration-150 ${
-                    displayDensity === density
+                    settings.displayDensity === density
                       ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm'
                       : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                   }`}
@@ -116,14 +116,14 @@ export default function Settings() {
               <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Number of leads displayed in the table view</span>
             </div>
             <select
-              value={leadsPerPage}
-              onChange={(e) => setLeadsPerPage(e.target.value)}
+              value={settings.leadsPerPage}
+              onChange={(e) => updateSetting('leadsPerPage', Number(e.target.value))}
               className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 focus:border-indigo-500 focus:outline-none transition"
             >
-              <option value="5">5 per page</option>
-              <option value="10">10 per page</option>
-              <option value="25">25 per page</option>
-              <option value="50">50 per page</option>
+              <option value={5}>5 per page</option>
+              <option value={10}>10 per page</option>
+              <option value={25}>25 per page</option>
+              <option value={50}>50 per page</option>
             </select>
           </div>
 
@@ -134,12 +134,19 @@ export default function Settings() {
               <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Choose the default pipeline view on the dashboard</span>
             </div>
             <div className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-50 dark:bg-slate-950/40">
-              <button className="px-3 py-1.5 rounded-md text-xs font-semibold bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition">
-                Table
-              </button>
-              <button className="px-3 py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
-                Kanban
-              </button>
+              {['table', 'kanban'].map((viewOption) => (
+                <button
+                  key={viewOption}
+                  onClick={() => updateSetting('defaultView', viewOption)}
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold capitalize transition duration-150 ${
+                    settings.defaultView === viewOption
+                      ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                  }`}
+                >
+                  {viewOption === 'table' ? 'Table' : 'Kanban'}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -179,34 +186,6 @@ export default function Settings() {
               </button>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* About & Info */}
-      <div className="rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/60">
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-indigo-500" />
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">About LeadFlow CRM</h3>
-          </div>
-        </div>
-        <div className="p-6 space-y-3">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-500 dark:text-slate-400">Version</span>
-            <span className="font-semibold text-slate-700 dark:text-slate-300">1.0.0</span>
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-500 dark:text-slate-400">Stack</span>
-            <span className="font-semibold text-slate-700 dark:text-slate-300">MERN (MongoDB, Express, React, Node.js)</span>
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-500 dark:text-slate-400">Frontend</span>
-            <span className="font-semibold text-slate-700 dark:text-slate-300">React + Vite + Tailwind CSS</span>
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-500 dark:text-slate-400">API</span>
-            <span className="font-semibold text-slate-700 dark:text-slate-300">RESTful Express Server</span>
-          </div>
         </div>
       </div>
 
